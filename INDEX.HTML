@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MS TVS - Bike Sales Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        .login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: slideUp 0.6s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px; color: white; font-weight: 900;
+            box-shadow: 0 8px 25px rgba(233,69,96,0.3);
+        }
+        .login-box h1 { color: #1a1a2e; font-size: 28px; margin-bottom: 5px; }
+        .login-box p { color: #888; font-size: 14px; margin-bottom: 30px; }
+        .login-input {
+            width: 100%; padding: 14px 18px;
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            font-size: 16px; margin-bottom: 15px;
+            transition: all 0.3s; text-align: center; letter-spacing: 8px;
+        }
+        .login-input:focus {
+            outline: none; border-color: #e94560;
+            box-shadow: 0 0 0 4px rgba(233,69,96,0.1);
+        }
+        .login-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: white; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233,69,96,0.3); }
+        .login-error {
+            color: #e94560; font-size: 13px; margin-top: 10px;
+            display: none;
+        }
+
+        /* ===== APP LAYOUT ===== */
+        .app-container { display: none; min-height: 100vh; }
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e, #0f0f1e);
+            padding: 25px 0; z-index: 100;
+            transition: transform 0.3s;
+        }
+        .sidebar-brand {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 25px 30px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-brand .logo-box {
+            width: 45px; height: 45px; background: #e94560;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; color: white; font-size: 18px;
+        }
+        .sidebar-brand h2 { color: white; font-size: 20px; }
+        .sidebar-brand span { color: #e94560; font-size: 11px; display: block; }
+
+        .nav-menu { padding: 20px 15px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; margin-bottom: 6px;
+            border-radius: 12px; color: #a0a0b0;
+            cursor: pointer; transition: all 0.3s;
+            font-size: 14px; font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(233,69,96,0.15); color: #e94560;
+        }
+        .nav-item i { font-size: 18px; width: 24px; text-align: center; }
+
+        .sidebar-footer {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 20px 25px; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .logout-btn {
+            display: flex; align-items: center; gap: 10px;
+            color: #ff6b6b; font-size: 13px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { color: #ff4444; }
+
+        .main-content {
+            margin-left: 260px; padding: 30px;
+            background: #f5f7fa; min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px;
+        }
+        .page-header h2 { color: #1a1a2e; font-size: 26px; }
+        .page-header p { color: #888; font-size: 14px; }
+
+        /* Mobile Toggle */
+        .menu-toggle {
+            display: none; position: fixed; top: 15px; left: 15px;
+            z-index: 200; background: #1a1a2e; color: white;
+            border: none; width: 45px; height: 45px; border-radius: 10px;
+            font-size: 20px; cursor: pointer;
+        }
+
+        /* ===== CARDS ===== */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white; border-radius: 16px; padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; margin-bottom: 15px;
+        }
+        .stat-icon.blue { background: #e3f2fd; color: #1976d2; }
+        .stat-icon.green { background: #e8f5e9; color: #388e3c; }
+        .stat-icon.orange { background: #fff3e0; color: #f57c00; }
+        .stat-icon.red { background: #ffebee; color: #d32f2f; }
+        .stat-value { font-size: 28px; font-weight: 900; color: #1a1a2e; }
+        .stat-label { font-size: 13px; color: #888; margin-top: 4px; }
+
+        /* ===== FORMS ===== */
+        .form-card {
+            background: white; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;
+        }
+        .form-section-title {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            color: white; padding: 14px 25px;
+            font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .form-body { padding: 25px; }
+        .form-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group.half { grid-column: span 2; }
+        .form-group label {
+            font-size: 12px; color: #888; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px;
+            font-size: 14px; font-family: 'Roboto', sans-serif;
+            transition: all 0.3s; background: #fafafa;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #e94560; background: white;
+            box-shadow: 0 0 0 4px rgba(233,69,96,0.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        .form-actions {
+            display: flex; gap: 12px; justify-content: flex-end;
+            padding: 20px 25px; border-top: 1px solid #f0f0f0;
+        }
+        .btn {
+            padding: 12px 28px; border-radius: 10px; font-size: 14px;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+            border: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(233,69,96,0.3); }
+        .btn-secondary { background: #f0f0f0; color: #555; }
+        .btn-secondary:hover { background: #e0e0e0; }
+
+        /* ===== TABLE ===== */
+        .table-card {
+            background: white; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;
+        }
+        .table-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 25px; border-bottom: 1px solid #f0f0f0;
+        }
+        .table-header h3 { font-size: 18px; color: #1a1a2e; }
+        .search-box {
+            display: flex; align-items: center; gap: 10px;
+            background: #f5f7fa; border-radius: 10px; padding: 8px 14px;
+            border: 2px solid transparent; transition: all 0.3s;
+        }
+        .search-box:focus-within { border-color: #e94560; background: white; }
+        .search-box input {
+            border: none; background: none; font-size: 14px;
+            outline: none; width: 200px;
+        }
+        .search-box i { color: #888; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #f8f9fa; }
+        th {
+            padding: 14px 20px; text-align: left;
+            font-size: 12px; color: #888; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        td {
+            padding: 16px 20px; font-size: 14px; color: #333;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        tr:hover { background: #fafafa; }
+        .badge {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .badge-paid { background: #e8f5e9; color: #388e3c; }
+        .badge-pending { background: #fff3e0; color: #f57c00; }
+        .badge-lease { background: #e3f2fd; color: #1976d2; }
+
+        .action-btns { display: flex; gap: 6px; }
+        .action-btn {
+            width: 34px; height: 34px; border-radius: 8px;
+            border: none; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            transition: all 0.3s; font-size: 13px;
+        }
+        .action-btn.view { background: #e3f2fd; color: #1976d2; }
+        .action-btn.print { background: #e8f5e9; color: #388e3c; }
+        .action-btn.delete { background: #ffebee; color: #d32f2f; }
+        .action-btn:hover { transform: scale(1.1); }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+        }
+        .empty-state i { font-size: 60px; color: #ddd; margin-bottom: 15px; }
+        .empty-state h4 { color: #888; font-size: 18px; margin-bottom: 8px; }
+        .empty-state p { color: #aaa; font-size: 14px; }
+
+        /* ===== PRINT REPORT ===== */
+        .print-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            z-index: 1000; align-items: center; justify-content: center;
+            padding: 20px; overflow-y: auto;
+        }
+        .print-overlay.active { display: flex; }
+        .print-box {
+            background: white; border-radius: 16px; max-width: 900px;
+            width: 100%; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: slideUp 0.4s ease;
+        }
+        .print-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 30px; border-bottom: 1px solid #f0f0f0;
+        }
+        .print-header h3 { font-size: 18px; color: #1a1a2e; }
+        .close-print {
+            background: none; border: none; font-size: 24px; color: #888;
+            cursor: pointer; width: 40px; height: 40px; border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .close-print:hover { background: #f5f5f5; color: #333; }
+
+        .print-btn-bar {
+            display: flex; gap: 10px; justify-content: center;
+            padding: 20px; border-top: 1px solid #f0f0f0;
+        }
+
+        /* Invoice Print Style */
+        .invoice-print {
+            padding: 40px;
+        }
+        .inv-header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #e94560);
+            padding: 30px 40px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 12px 12px 0 0; margin: -40px -40px 30px;
+        }
+        .inv-header h1 { color: white; font-size: 28px; letter-spacing: 2px; }
+        .inv-header .inv-badge {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a1a2e; padding: 10px 20px; border-radius: 20px;
+            font-weight: 800; font-size: 14px;
+        }
+        .inv-meta {
+            display: flex; justify-content: space-between; margin-bottom: 25px;
+            font-size: 14px; color: #555;
+        }
+        .inv-meta b { color: #1a1a2e; }
+        .inv-section { margin-bottom: 20px; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; }
+        .inv-section-title {
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            color: white; padding: 12px 20px; font-weight: 700; font-size: 14px;
+        }
+        .inv-section-body { padding: 20px; }
+        .inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .inv-field { display: flex; flex-direction: column; gap: 4px; }
+        .inv-field label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; }
+        .inv-field .val { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-weight: 500; min-height: 38px; display: flex; align-items: center; }
+        .inv-field .val.highlight { background: linear-gradient(135deg, #fff3cd, #ffeaa7); border-color: #ffd700; color: #856404; font-weight: 700; }
+        .inv-field .val.total { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #ffd700; border-color: #1a1a2e; font-weight: 900; font-size: 16px; }
+        .inv-sign { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 30px; padding-top: 30px; border-top: 2px dashed #ddd; text-align: center; }
+        .inv-sign-line { border-top: 1px solid #333; padding-top: 10px; font-size: 13px; color: #555; font-weight: 600; }
+        .inv-footer { text-align: center; padding: 20px; background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; margin: 30px -40px -40px; border-radius: 0 0 12px 12px; }
+        .inv-footer p { font-size: 13px; opacity: 0.8; }
+
+        @media print {
+            .print-overlay { background: white; position: static; overflow: visible; display: block !important; }
+            .print-header, .print-btn-bar { display: none; }
+            .print-box { max-height: none; box-shadow: none; }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .inv-grid { grid-template-columns: 1fr; }
+        }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; z-index: 3000;
+            padding: 16px 24px; border-radius: 12px; color: white;
+            font-weight: 600; font-size: 14px; display: none; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideInRight 0.4s ease;
+        }
+        .toast.success { background: linear-gradient(135deg, #43a047, #66bb6a); }
+        .toast.error { background: linear-gradient(135deg, #e53935, #ef5350); }
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div class="login-page" id="loginPage">
+    <div class="login-box">
+        <div class="login-logo">TVS</div>
+        <h1>MS TVS</h1>
+        <p>Authorized TVS Dealer - Bike Sales Manager</p>
+        <input type="password" class="login-input" id="loginPass" placeholder="Enter Password" maxlength="4">
+        <button class="login-btn" onclick="doLogin()">Login</button>
+        <div class="login-error" id="loginError">Invalid Password! Try 1234</div>
+    </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div class="app-container" id="appContainer">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-box">TVS</div>
+            <div>
+                <h2>MS TVS</h2>
+                <span>Authorized Dealer</span>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="showPage('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="nav-item" onclick="showPage('addCustomer')">
+                <i class="fas fa-user-plus"></i> Add Customer
+            </div>
+            <div class="nav-item" onclick="showPage('customers')">
+                <i class="fas fa-users"></i> View Customers
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="logout-btn" onclick="doLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div class="page active" id="dashboard">
+            <div class="page-header">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Overview of your bike sales</p>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-value" id="statPaid">0</div>
+                    <div class="stat-label">Paid (Cash)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="stat-value" id="statLease">0</div>
+                    <div class="stat-label">Lease</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="stat-value" id="statRevenue">Rs. 0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Recent Customers</h3>
+                </div>
+                <div id="recentList">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h4>No customers yet</h4>
+                        <p>Add your first customer from the sidebar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ADD CUSTOMER ===== -->
+        <div class="page" id="addCustomer">
+            <div class="page-header">
+                <div>
+                    <h2>Add Customer</h2>
+                    <p>Enter new bike sales details</p>
+                </div>
+            </div>
+            <form id="customerForm" onsubmit="saveCustomer(event)">
+                <!-- Customer Details -->
+                <div class="form-card">
+                    <div class="form-section-title"><i class="fas fa-user"></i> Customer Details</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Customer Name</label>
+                                <input type="text" id="cName" required placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="tel" id="cMobile" required placeholder="07X XXX XXXX">
+                            </div>
+                            <div class="form-group">
+                                <label>NIC Number</label>
+                                <input type="text" id="cNic" placeholder="XXXXXXXXXX / XXXXXXXXXXXX">
+                            </div>
+                            <div class="form-group full">
+                                <label>Address</label>
+                                <textarea id="cAddress" placeholder="Full address"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <!-- Bike Details -->
+                <div class="form-card">
+                    <div class="form-section-title"><i class="fas fa-motorcycle"></i> Bike Details</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Bike Model</label>
+                                <input type="text" id="cBikeModel" required placeholder="e.g. TVS Apache RTR 160">
+                            </div>
+                            <div class="form-group">
+                                <label>Colour</label>
+                                <input type="text" id="cColor" placeholder="e.g. Red, Black">
+                            </div>
+                            <div class="form-group">
+                                <label>Chassis Number</label>
+                                <input type="text" id="cChassis" placeholder="Chassis No">
+                            </div>
+                            <div class="form-group">
+                                <label>Engine Number</label>
+                                <input type="text" id="cEngine" placeholder="Engine No">
+                            </div>
+                            <div class="form-group">
+                                <label>Registration Number</label>
+                                <input type="text" id="cRegNo" placeholder="WP-XXX-XXXX">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <!-- Price Details -->
+                <div class="form-card">
+                    <div class="form-section-title"><i class="fas fa-tag"></i> Price Details</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Total Price (Rs.)</label>
+                                <input type="number" id="cTotalPrice" required placeholder="0.00" onchange="calcPrice()">
+                            </div>
+                            <div class="form-group">
+                                <label>Discount (Rs.)</label>
+                                <input type="number" id="cDiscount" placeholder="0.00" value="0" onchange="calcPrice()">
+                            </div>
+                            <div class="form-group">
+                                <label>Net Price (Rs.)</label>
+                                <input type="number" id="cNetPrice" readonly placeholder="Auto calculated">
+                            </div>
+                            <div class="form-group">
+                                <label>Down Payment (Rs.)</label>
+                                <input type="number" id="cDownPayment" placeholder="0.00" onchange="calcPrice()">
+                            </div>
+                            <div class="form-group">
+                                <label>RMV Fee (Rs.)</label>
+                                <input type="number" id="cRmv" placeholder="0.00" value="0" onchange="calcPrice()">
+                            </div>
+                            <div class="form-group">
+                                <label>Total Amount (Rs.)</label>
+                                <input type="number" id="cTotalAmount" readonly placeholder="Auto calculated">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <!-- Payment & Lease -->
+                <div class="form-card">
+                    <div class="form-section-title"><i class="fas fa-credit-card"></i> Payment & Lease Info</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Payment Type</label>
+                                <select id="cPayType" onchange="toggleLease()">
+                                    <option value="cash">Cash (Full Payment)</option>
+                                    <option value="lease">Lease / Loan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Taken By</label>
+                                <input type="text" id="cPayBy" placeholder="Staff name">
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Payment</label>
+                                <input type="date" id="cPayDate">
+                            </div>
+                            <div class="form-group" id="leaseCompanyGroup">
+                                <label>Lease Company</label>
+                                <input type="text" id="cLeaseCompany" placeholder="e.g. Commercial Bank">
+                            </div>
+                            <div class="form-group" id="leaseOfficerGroup">
+                                <label>Marketing Officer</label>
+                                <input type="text" id="cOfficer" placeholder="Officer name">
+                            </div>
+                            <div class="form-group" id="leasePhoneGroup">
+                                <label>Officer Contact</label>
+                                <input type="tel" id="cOfficerPhone" placeholder="Phone number">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Customer</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== VIEW CUSTOMERS ===== -->
+        <div class="page" id="customers">
+            <div class="page-header">
+                <div>
+                    <h2>All Customers</h2>
+                    <p>Search and manage customer records</p>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Customer Records</h3>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, phone, bike..." onkeyup="searchCustomers()">
+                    </div>
+                </div>
+                <div id="customerTableContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h4>No customers yet</h4>
+                        <p>Add customers to see them here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== PRINT OVERLAY ===== -->
+<div class="print-overlay" id="printOverlay">
+    <div class="print-box">
+        <div class="print-header">
+            <h3><i class="fas fa-file-invoice"></i> Sales Report</h3>
+            <button class="close-print" onclick="closePrint()">&times;</button>
+        </div>
+        <div id="printContent"></div>
+        <div class="print-btn-bar">
+            <button class="btn btn-secondary" onclick="closePrint()">Close</button>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const STORAGE_KEY = 'ms_tvs_customers';
+let customers = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+// ===== LOGIN =====
+function doLogin() {
+    const pass = document.getElementById('loginPass').value;
+    if (pass === '1234') {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'block';
+        document.getElementById('loginError').style.display = 'none';
+        updateDashboard();
+        renderTable();
+        renderRecent();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+    }
+}
+
+function doLogout() {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    document.getElementById('loginPass').value = '';
+}
+
+// Enter key login
+addEventListener('DOMContentLoaded', () => {
+    document.getElementById('loginPass').addEventListener('keypress', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+});
+
+// ===== NAVIGATION =====
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    event.target.closest('.nav-item').classList.add('active');
+    if (pageId === 'dashboard') { updateDashboard(); renderRecent(); }
+    if (pageId === 'customers') renderTable();
+    document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ===== PRICE CALC =====
+function calcPrice() {
+    const total = parseFloat(document.getElementById('cTotalPrice').value) || 0;
+    const discount = parseFloat(document.getElementById('cDiscount').value) || 0;
+    const down = parseFloat(document.getElementById('cDownPayment').value) || 0;
+    const rmv = parseFloat(document.getElementById('cRmv').value) || 0;
+    const net = total - discount;
+    const totalAmt = net + rmv;
+    document.getElementById('cNetPrice').value = net.toFixed(2);
+    document.getElementById('cTotalAmount').value = totalAmt.toFixed(2);
+}
+
+function toggleLease() {
+    const isLease = document.getElementById('cPayType').value === 'lease';
+    document.getElementById('leaseCompanyGroup').style.display = isLease ? 'flex' : 'none';
+    document.getElementById('leaseOfficerGroup').style.display = isLease ? 'flex' : 'none';
+    document.getElementById('leasePhoneGroup').style.display = isLease ? 'flex' : 'none';
+}
+
+// ===== SAVE =====
+function saveCustomer(e) {
+    e.preventDefault();
+    const customer = {
+        id: Date.now(),
+        name: document.getElementById('cName').value,
+        mobile: document.getElementById('cMobile').value,
+        nic: document.getElementById('cNic').value,
+        address: document.getElementById('cAddress').value,
+        bikeModel: document.getElementById('cBikeModel').value,
+        color: document.getElementById('cColor').value,
+        chassis: document.getElementById('cChassis').value,
+        engine: document.getElementById('cEngine').value,
+        regNo: document.getElementById('cRegNo').value,
+        totalPrice: document.getElementById('cTotalPrice').value,
+        discount: document.getElementById('cDiscount').value || 0,
+        netPrice: document.getElementById('cNetPrice').value,
+        downPayment: document.getElementById('cDownPayment').value || 0,
+        rmv: document.getElementById('cRmv').value || 0,
+        totalAmount: document.getElementById('cTotalAmount').value,
+        payType: document.getElementById('cPayType').value,
+        payBy: document.getElementById('cPayBy').value,
+        payDate: document.getElementById('cPayDate').value,
+        leaseCompany: document.getElementById('cLeaseCompany').value,
+        officer: document.getElementById('cOfficer').value,
+        officerPhone: document.getElementById('cOfficerPhone').value,
+        createdAt: new Date().toISOString()
+    };
+    customers.unshift(customer);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+    showToast('Customer saved successfully!', 'success');
+    resetForm();
+    showPage('dashboard');
+    updateDashboard();
+    renderRecent();
+}
+
+function resetForm() {
+    document.getElementById('customerForm').reset();
+    document.getElementById('cNetPrice').value = '';
+    document.getElementById('cTotalAmount').value = '';
+    toggleLease();
+}
+
+// ===== DASHBOARD =====
+function updateDashboard() {
+    const total = customers.length;
+    const paid = customers.filter(c => c.payType === 'cash').length;
+    const lease = customers.filter(c => c.payType === 'lease').length;
+    const revenue = customers.reduce((sum, c) => sum + (parseFloat(c.downPayment) || 0), 0);
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statPaid').textContent = paid;
+    document.getElementById('statLease').textContent = lease;
+    document.getElementById('statRevenue').textContent = 'Rs. ' + revenue.toLocaleString();
+}
+
+function renderRecent() {
+    const container = document.getElementById('recentList');
+    if (customers.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><h4>No customers yet</h4><p>Add your first customer from the sidebar</p></div>`;
+        return;
+    }
+    const recent = customers.slice(0, 5);
+    let html = `<table><thead><tr><th>Name</th><th>Bike</th><th>Total</th><th>Type</th><th>Date</th><th>Action</th></tr></thead><tbody>`;
+    recent.forEach(c => {
+        const date = c.payDate ? new Date(c.payDate).toLocaleDateString() : 'N/A';
+        const badge = c.payType === 'cash' ? 'badge-paid' : 'badge-lease';
+        const type = c.payType === 'cash' ? 'Cash' : 'Lease';
+        html += `<tr>
+            <td><b>${c.name}</b><br><small style="color:#888">${c.mobile}</small></td>
+            <td>${c.bikeModel}</td>
+            <td><b>Rs. ${c.totalAmount}</b></td>
+            <td><span class="badge ${badge}">${type}</span></td>
+            <td>${date}</td>
+            <td><div class="action-btns"><button class="action-btn view" onclick="viewReport(${c.id})"><i class="fas fa-eye"></i></button><button class="action-btn print" onclick="printReport(${c.id})"><i class="fas fa-print"></i></button></div></td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+// ===== TABLE =====
+function renderTable(filter = '') {
+    const container = document.getElementById('customerTableContainer');
+    let data = customers;
+    if (filter) {
+        const f = filter.toLowerCase();
+        data = customers.filter(c =>
+            c.name.toLowerCase().includes(f) ||
+            c.mobile.includes(f) ||
+            c.bikeModel.toLowerCase().includes(f) ||
+            (c.nic && c.nic.toLowerCase().includes(f))
+        );
+    }
+    if (data.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h4>No results found</h4><p>Try a different search term</p></div>`;
+        return;
+    }
+    let html = `<table><thead><tr><th>Name</th><th>Contact</th><th>Bike Model</th><th>Reg No</th><th>Total Amount</th><th>Payment</th><th>Date</th><th>Actions</th></tr></thead><tbody>`;
+    data.forEach(c => {
+        const date = c.payDate ? new Date(c.payDate).toLocaleDateString() : 'N/A';
+        const badge = c.payType === 'cash' ? 'badge-paid' : 'badge-lease';
+        const type = c.payType === 'cash' ? 'Cash' : 'Lease';
+        html += `<tr>
+            <td><b>${c.name}</b><br><small style="color:#888">${c.nic || 'No NIC'}</small></td>
+            <td>${c.mobile}<br><small style="color:#888">${c.address || ''}</small></td>
+            <td>${c.bikeModel}<br><small style="color:#888">${c.color || ''}</small></td>
+            <td>${c.regNo || 'N/A'}</td>
+            <td><b>Rs. ${c.totalAmount}</b></td>
+            <td><span class="badge ${badge}">${type}</span></td>
+            <td>${date}</td>
+            <td><div class="action-btns"><button class="action-btn view" onclick="viewReport(${c.id})" title="View"><i class="fas fa-eye"></i></button><button class="action-btn print" onclick="printReport(${c.id})" title="Print"><i class="fas fa-print"></i></button><button class="action-btn delete" onclick="deleteCustomer(${c.id})" title="Delete"><i class="fas fa-trash"></i></button></div></td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function searchCustomers() {
+    const val = document.getElementById('searchInput').value;
+    renderTable(val);
+}
+
+function deleteCustomer(id) {
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+    customers = customers.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+    renderTable(document.getElementById('searchInput').value);
+    updateDashboard();
+    renderRecent();
+    showToast('Customer deleted!', 'success');
+}
+
+// ===== VIEW / PRINT REPORT =====
+function buildInvoice(c) {
+    const date = c.payDate ? new Date(c.payDate).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+    const type = c.payType === 'cash' ? 'Cash' : 'Lease';
+    return `
+    <div class="invoice-print">
+        <div class="inv-header">
+            <div>
+                <h1>MS TVS</h1>
+                <p style="color:#ffd700; font-size:13px; margin-top:4px">Authorized TVS Dealer</p>
+            </div>
+            <div class="inv-badge">Sales Report</div>
+        </div>
+        <div class="inv-meta">
+            <div>Report No: <b>INV-${String(c.id).slice(-6)}</b></div>
+            <div>Date: <b>${date}</b></div>
+        </div>
+        <div class="inv-section">
+            <div class="inv-section-title">Customer Details</div>
+            <div class="inv-section-body">
+                <div class="inv-grid">
+                    <div class="inv-field"><label>Customer Name</label><div class="val">${c.name || '—'}</div></div>
+                    <div class="inv-field"><label>Mobile Number</label><div class="val">${c.mobile || '—'}</div></div>
+                    <div class="inv-field"><label>NIC Number</label><div class="val">${c.nic || '—'}</div></div>
+                    <div class="inv-field" style="grid-column:1/-1"><label>Address</label><div class="val">${c.address || '—'}</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="inv-section">
+            <div class="inv-section-title">Bike Details</div>
+            <div class="inv-section-body">
+                <div class="inv-grid">
+                    <div class="inv-field"><label>Bike Model</label><div class="val">${c.bikeModel || '—'}</div></div>
+                    <div class="inv-field"><label>Colour</label><div class="val">${c.color || '—'}</div></div>
+                    <div class="inv-field"><label>Chassis Number</label><div class="val">${c.chassis || '—'}</div></div>
+                    <div class="inv-field"><label>Engine Number</label><div class="val">${c.engine || '—'}</div></div>
+                    <div class="inv-field"><label>Registration Number</label><div class="val">${c.regNo || '—'}</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="inv-section">
+            <div class="inv-section-title">Price Details</div>
+            <div class="inv-section-body">
+                <div class="inv-grid">
+                    <div class="inv-field"><label>Total Price</label><div class="val highlight">Rs. ${c.totalPrice || '0'}</div></div>
+                    <div class="inv-field"><label>Discount</label><div class="val">Rs. ${c.discount || '0'}</div></div>
+                    <div class="inv-field"><label>Net Price</label><div class="val highlight">Rs. ${c.netPrice || '0'}</div></div>
+                    <div class="inv-field"><label>Down Payment</label><div class="val">Rs. ${c.downPayment || '0'}</div></div>
+                    <div class="inv-field"><label>RMV Fee</label><div class="val">Rs. ${c.rmv || '0'}</div></div>
+                    <div class="inv-field"><label>Total Amount</label><div class="val total">Rs. ${c.totalAmount || '0'}</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="inv-section">
+            <div class="inv-section-title">Payment & Lease Info</div>
+            <div class="inv-section-body">
+                <div class="inv-grid">
+                    <div class="inv-field"><label>Payment Type</label><div class="val">${type}</div></div>
+                    <div class="inv-field"><label>Payment Taken By</label><div class="val">${c.payBy || '—'}</div></div>
+                    <div class="inv-field"><label>Date of Payment</label><div class="val">${date}</div></div>
+                    ${c.payType === 'lease' ? `
+                    <div class="inv-field"><label>Lease Company</label><div class="val">${c.leaseCompany || '—'}</div></div>
+                    <div class="inv-field"><label>Marketing Officer</label><div class="val">${c.officer || '—'}</div></div>
+                    <div class="inv-field"><label>Officer Contact</label><div class="val">${c.officerPhone || '—'}</div></div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+        <div class="inv-sign">
+            <div class="inv-sign-line">Customer Signature</div>
+            <div class="inv-sign-line">Dealer Signature</div>
+            <div class="inv-sign-line">Marketing Officer Signature</div>
+        </div>
+        <div class="inv-footer">
+            <p style="color:#ffd700; font-weight:700">MS TVS - Trusted TVS Authorized Dealer</p>
+            <p>Thank you for choosing TVS!</p>
+            <p style="font-size:11px; opacity:0.6; margin-top:8px">This is a computer generated report.</p>
+        </div>
+    </div>`;
+}
+
+function viewReport(id) {
+    const c = customers.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('printContent').innerHTML = buildInvoice(c);
+    document.getElementById('printOverlay').classList.add('active');
+}
+
+function printReport(id) {
+    viewReport(id);
+    setTimeout(() => window.print(), 500);
+}
+
+function closePrint() {
+    document.getElementById('printOverlay').classList.remove('active');
+}
+
+// ===== TOAST =====
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.className = 'toast ' + type;
+    t.innerHTML = type === 'success' ? '<i class="fas fa-check-circle"></i> ' + msg : '<i class="fas fa-exclamation-circle"></i> ' + msg;
+    t.style.display = 'flex';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ===== INIT =====
+addEventListener('DOMContentLoaded', () => {
+    toggleLease();
+});
+</script>
+</body>
+</html>
